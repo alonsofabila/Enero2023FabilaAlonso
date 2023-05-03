@@ -6,10 +6,15 @@ import com.mayab.desarrollo.persistance.DAOUsuario;
 public class UsuarioServicio {
 
     private DAOUsuario dao;
-    public UsuarioServicio(DAOUsuario d) {
-        dao = d; }
 
-    public boolean login(String user, String pass) {  boolean result = false;
+    public UsuarioServicio(DAOUsuario d) {
+
+        dao = d;
+    }
+
+    public boolean login(String user, String pass) {
+
+        boolean result = false;
         Usuario usuario = dao.findByName(user);
         if(usuario != null) {
             if(usuario.getPassword().equals(pass))
@@ -18,24 +23,42 @@ public class UsuarioServicio {
         return result;
     }
 
-    public Usuario createAccount(String nombre, String password, String email) {
-        Usuario user = new Usuario();
+    public boolean changePassword(String userName, String oldPass, String newPass) {
 
-        user.setNombre(nombre);
-        user.setPassword(password);
-        user.setEmail(email);
+        boolean updated = false;
+        Usuario u;
 
-        if(dao.findByEmail(email)==null && dao.findByName(nombre)==null){
-            System.out.println("usuario creado");
-            dao.createUser(user);
+        if(login(userName, oldPass)) {
+            u = dao.findByName(userName);
+            dao.updatePassword(u, newPass);
+            updated = true;
         }
-        else {
-            System.out.println("El usuario ya existe");
-        }
-        return null;
+
+        return updated;
     }
 
-    public String recoverPassword(String email, String password) {
+    public Usuario createAccount(String nombre, String password, String email) {
+
+
+        if(dao.findByEmail(email) == null && dao.findByName(nombre) == null){
+
+            Usuario user = new Usuario();
+            user.setNombre(nombre);
+            user.setPassword(password);
+            user.setEmail(email);
+            dao.createUser(user);
+            System.out.println("Usuario creado");
+            return user;
+        }else {
+
+            System.out.println("El usuario ya existe");
+            return null;
+        }
+
+
+    }
+
+    public void recoverPassword(String email, String password) {
 
         try {
             if(dao.findByEmail(email) == null) {
@@ -48,7 +71,7 @@ public class UsuarioServicio {
                 System.out.println("Password actualizada");
             }
         }catch(Exception e) {
-            System.out.println("Error: no fue posible actualizar la contraseña");        }
-        return email;
+
+        }
     }
 }

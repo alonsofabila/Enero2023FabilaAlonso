@@ -63,8 +63,11 @@ public class LoginForm extends JFrame implements ActionListener
     //define abstract method actionPerformed() which will be called on button click
     public void actionPerformed(ActionEvent ae)     //pass action listener as a parameter
     {
+
         String userValue = textField1.getText();        //get user entered username from the textField1
         String passValue = textField2.getText();        //get user entered pasword from the textField2
+        JButton update;
+        JPanel welcomePanel;
 
         DAOUsuario dao = new DAOUsuario();
         UsuarioServicio servicio = new UsuarioServicio(dao);
@@ -73,6 +76,35 @@ public class LoginForm extends JFrame implements ActionListener
         //check whether the credentials are authentic or not
         if (servicio.login(userValue, passValue)) {  //if authentic, navigate user to a new page
 
+            NewPage page = new NewPage();
+
+            //make page visible to the user
+            page.setVisible(true);
+
+            JLabel wel_label = new JLabel("Welcome: " + userValue);
+            update = new JButton("Update password");
+
+            welcomePanel = new JPanel(new GridLayout(1, 2));
+            welcomePanel.add(wel_label);
+            welcomePanel.add(update);
+
+            add(welcomePanel, BorderLayout.CENTER);
+
+            page.getContentPane().add(welcomePanel);
+
+            update.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae) {
+
+
+
+                    ChangePassword updateForm = new ChangePassword();
+                    updateForm.setSize(300, 100);
+                    updateForm.setVisible(true);
+                }
+            });
+
+        }
+        else{
             //create instance of the NewPage
             NewPage page = new NewPage();
 
@@ -80,14 +112,10 @@ public class LoginForm extends JFrame implements ActionListener
             page.setVisible(true);
 
             //create a welcome label and set it to the new page
-            JLabel wel_label = new JLabel("Welcome: "+userValue);
+            JLabel wel_label = new JLabel("Please enter valid username and password");
             page.getContentPane().add(wel_label);
-        }
-        else{
-            //show error message
-            System.out.println("Please enter valid username and password");
+
         }
     }
-
 
 }
